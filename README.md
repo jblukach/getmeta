@@ -14,6 +14,12 @@ Ubuntu:
 sudo apt-get install libmagic1
 ```
 
+Python:
+
+```
+pip install getmeta
+```
+
 ### Data
 
 **1. path**
