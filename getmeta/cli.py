@@ -6,8 +6,11 @@ import os
 import platform
 import pwd
 import time
+import warnings
 from aiofile import async_open
 from getmeta import __version__
+
+warnings.filterwarnings('ignore')
 
 BLOCKSIZE = 65536
 
@@ -107,7 +110,7 @@ async def parseonlypath(onlypath):
         onlypath = '\\'.join(out)
     return onlypath
 
-async def main():
+async def start():
     print('--------------------------------')
     print('GETMETA v'+__version__)
     print('--------------------------------')
@@ -211,4 +214,6 @@ async def main():
                               magic_file+'|'+uid+'|'+gid+'|'+mask+'|'+mtime+'|'+md5_path+'|'+ \
                               md5_dir+'|'+md5_name+'|'+sha256_path+'|'+sha256_dir+'|'+sha256_name+'\n')
 
-asyncio.run(main())
+def main():
+    asyncio.run(start())
+    print('Completed!!')    
