@@ -7,7 +7,6 @@ import platform
 import pwd
 import time
 from aiofile import async_open
-from blake3 import blake3
 from getmeta import __version__
 
 BLOCKSIZE = 65536
@@ -22,42 +21,33 @@ async def hasher(fname):
         b3_file = ''
         md5_hasher = hashlib.md5()
         sha256_hasher = hashlib.sha256()
-        b3_hasher = blake3()
         with open(fname,'rb') as afile:
             buf = afile.read(BLOCKSIZE)
             while len(buf) > 0:
                 md5_hasher.update(buf)
                 sha256_hasher.update(buf)
-                b3_hasher.update(buf)
                 buf = afile.read(BLOCKSIZE)
         md5_file = md5_hasher.hexdigest().upper()
         sha256_file = sha256_hasher.hexdigest().upper()
-        b3_file = b3_hasher.hexdigest().upper()
     except:
         md5_file = '-'
         sha256_file = '-'
-        b3_file = '-'
         pass
     if md5_file == 'D41D8CD98F00B204E9800998ECF8427E':
         md5_file = 'EMPTY'
     if sha256_file == 'E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855':
         sha256_file = 'EMPTY'
-    if b3_file == 'AF1349B9F5F9A1A6A0404DEA36DCC9499BCB25C9ADC112B7CC9A93CAE41F3262':
-        b3_file = 'EMPTY'
-    hashes = md5_file+'|'+sha256_file+'|'+b3_file
+    hashes = md5_file+'|'+sha256_file
     return hashes
 
 async def matchmeta(meta):
     md5_hasher = hashlib.md5()
     sha256_hasher = hashlib.sha256()
-    b3_hasher = blake3()
     md5_hasher.update(meta.encode())
     sha256_hasher.update(meta.encode())
-    b3_hasher.update(meta.encode())
     md5_meta = md5_hasher.hexdigest().upper()
     sha256_meta = sha256_hasher.hexdigest().upper()
-    b3_meta = b3_hasher.hexdigest().upper()
-    meta = md5_meta+'|'+sha256_meta+'|'+b3_meta
+    meta = md5_meta+'|'+sha256_meta
     return meta
 
 async def mime(fname):
@@ -122,13 +112,12 @@ async def main():
     print('GETMETA v'+__version__)
     print('--------------------------------')
     async with async_open(host+'-'+run+'.txt', 'w+') as f:
-        await f.write('path|source|size|md5|sha256|blake3|magic|uid|gid|mask|mtime|md5path|md5dir|md5name|sha256path|sha256dir|sha256name|b3path|b3dir|b3name\n')
+        await f.write('path|source|size|md5|sha256|magic|uid|gid|mask|mtime|md5path|md5dir|md5name|sha256path|sha256dir|sha256name\n')
         for dirpath, dirs, files in os.walk('/'): # <-- ADD WINDOWS OPTION
             dname = os.path.join(dirpath)
             size = '-'
             md5_file = '-'
             sha256_file = '-'
-            b3_file = '-'
             magic_file = '-'
             try:
                 uid = pwd.getpwuid(os.stat(dname).st_uid)[0]
@@ -152,20 +141,16 @@ async def main():
                 pass
             md5_path = '-'
             sha256_path = '-'
-            b3_path = '-'
             directory = await normalizepath(dname)
             meta = await matchmeta(directory)
             out = meta.split('|')
             md5_dir = out[0]
             sha256_dir = out[1]
-            b3_dir = out[2]
             md5_name = '-'
             sha256_name = '-'
-            b3_name = '-'
-            await f.write(dname+'|DIR|'+size+'|'+md5_file+'|'+sha256_file+'|'+b3_file+'|'+magic_file+'|'+ \
+            await f.write(dname+'|DIR|'+size+'|'+md5_file+'|'+sha256_file+'|'+magic_file+'|'+ \
                           uid+'|'+gid+'|'+mask+'|'+mtime+'|'+md5_path+'|'+md5_dir+'|'+md5_name+'|'+ \
-                          sha256_path+'|'+sha256_dir+'|'+sha256_name+'|'+b3_path+'|'+b3_dir+'|'+ \
-                          b3_name+'\n')
+                          sha256_path+'|'+sha256_dir+'|'+sha256_name+'\n')
             for filename in files:
                 fname = os.path.join(dirpath,filename)
                 try:
@@ -176,19 +161,16 @@ async def main():
                 if size == 0:
                     md5_file = 'EMPTY'
                     sha256_file = 'EMPTY'
-                    b3_file = 'EMPTY'
                     magic_file = 'EMPTY'
                 elif size > 104857599:
                     md5_file = 'LARGE'
                     sha256_file = 'LARGE'
-                    b3_file = 'LARGE'
                     magic_file = 'LARGE'
                 else:
                     hashes = await hasher(fname)
                     out = hashes.split('|')
                     md5_file = out[0]
                     sha256_file = out[1]
-                    b3_file = out[2]
                     magic_file = await mime(fname)
                 try:
                     uid = pwd.getpwuid(os.stat(fname).st_uid)[0]
@@ -215,22 +197,18 @@ async def main():
                 out = meta.split('|')
                 md5_path = out[0]
                 sha256_path = out[1]
-                b3_path = out[2]
                 directory = await parseonlypath(fullpath)
                 meta = await matchmeta(directory)
                 out = meta.split('|')
                 md5_dir = out[0]
                 sha256_dir = out[1]
-                b3_dir = out[2]
                 filename = await parsefilename(fullpath)
                 meta = await matchmeta(filename)
                 out = meta.split('|')
                 md5_name = out[0]
                 sha256_name = out[1]
-                b3_name = out[2]
-                await f.write(fname+'|FILE|'+str(size)+'|'+md5_file+'|'+sha256_file+'|'+b3_file+'|'+ \
-                              magic_file+'|'+uid+'|'+gid+'|'+mask+'|'+mtime+'|'+md5_path+'|'+md5_dir+'|'+ \
-                              md5_name+'|'+sha256_path+'|'+sha256_dir+'|'+sha256_name+'|'+b3_path+'|'+ \
-                              b3_dir+'|'+b3_name+'\n')
+                await f.write(fname+'|FILE|'+str(size)+'|'+md5_file+'|'+sha256_file+'|'+ \
+                              magic_file+'|'+uid+'|'+gid+'|'+mask+'|'+mtime+'|'+md5_path+'|'+ \
+                              md5_dir+'|'+md5_name+'|'+sha256_path+'|'+sha256_dir+'|'+sha256_name+'\n')
 
 asyncio.run(main())

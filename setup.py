@@ -16,7 +16,7 @@ setup(
     author_email = "help@lukach.io",
     license = "Apache-2.0",
     packages = ["getmeta"],
-    install_requires = ["aiofile","blake3","python-magic"],
+    install_requires = ["aiofile","python-magic"],
     zip_safe = False,
     entry_points = {
         "console_scripts": ["getmeta=getmeta.cli:main"],

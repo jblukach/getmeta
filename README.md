@@ -43,68 +43,51 @@ pip install getmeta
   - hash value
     - non-empty files
     - less than 100 MB
-    
-**6. blake3**
-  - hash value
-    - non-empty files
-    - less than 100 MB
 
-**7. magic**
+**6. magic**
   - mime type
     - non-empty files
     - less than 100 MB
 
-**8. uid**
+**7. uid**
   - display name
     - /etc/passwd
     
-**9. gid**
+**8. gid**
   - display name
     - /etc/group
     
-**10. mask**
+**9. mask**
   - inode mask
     - octet
 
-**11. mtime**
+**10. mtime**
   - last modified timestamp
     - unix epoch
 
-**12. md5path**
+**11. md5path**
   - fullpath
     - md5
 
-**13. md5dir**
+**12. md5dir**
   - directory
     - md5
 
-**14. md5name**
+**13. md5name**
   - filename
     - md5
 
-**15. sha256path**
+**14. sha256path**
   - fullpath
     - sha256
 
-**16. sha256dir**
+**15. sha256dir**
   - directory
     - sha256
 
-**17. sha256name**
+**16. sha256name**
   - filename
     - sha256
-
-**18. b3path**
-  - fullpath
-    - blake3
-
-**19. b3dir**
-  - directory
-    - blake3
-
-**20. b3name**
-  - filename
-    - blake3
 
 ### Inode Mask
 
