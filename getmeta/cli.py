@@ -21,7 +21,6 @@ async def hasher(fname):
     try:
         md5_file = ''
         sha256_file = ''
-        b3_file = ''
         md5_hasher = hashlib.md5()
         sha256_hasher = hashlib.sha256()
         with open(fname,'rb') as afile:
