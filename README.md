@@ -138,5 +138,5 @@ mask
 ### Local Development
 
 ```
-$ python setup.py install --user
+python setup.py install --user
 ```
