@@ -152,11 +152,11 @@ async def start():
                     sha256_file = 'LARGE'
                     magic_file = 'LARGE'
                 else:
-                    hashes = await hasher(p)
+                    hashes = await hasher(str(p))
                     out = hashes.split('|')
                     md5_file = out[0]
                     sha256_file = out[1]
-                    magic_file = await mime(p)
+                    magic_file = await mime(str(p))
                 fullpath = await normalizepath(str(p))
                 meta = await matchmeta(fullpath)
                 out = meta.split('|')
