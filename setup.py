@@ -11,7 +11,7 @@ setup(
     description = "Not just gold builds anymore!",
     long_description = long_description,
     long_description_content_type = "text/markdown",
-    url = "https://github.com/jblukach/getmeta",
+    url = "https://github.com/4n6ir/getmeta",
     author = "John Lukach",
     author_email = "hello@lukach.io",
     license = "Apache-2.0",
