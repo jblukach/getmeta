@@ -13,13 +13,19 @@ setup(
     long_description_content_type = "text/markdown",
     url = "https://github.com/4n6ir/getmeta",
     author = "John Lukach",
-    author_email = "hello@lukach.io",
+    author_email = "hello@4n6ir.com",
     license = "Apache-2.0",
-    packages = ["getmeta"],
-    install_requires = ["aiofile","python-magic"],
+    packages = [
+        "getmeta"
+    ],
+    install_requires = [
+        "requests"
+    ],
     zip_safe = False,
     entry_points = {
-        "console_scripts": ["getmeta=getmeta.cli:main"],
+        "console_scripts": [
+            "getmeta=getmeta.cli:main"
+        ],
     },
-    python_requires = ">=3.7",
+    python_requires = ">=3.8",
 )
