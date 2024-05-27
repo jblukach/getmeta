@@ -55,9 +55,6 @@ Clean data is mission-critical for collecting operating system artifacts, especi
 14. sha256name
 15. sha3name
 16. type
-17. entropy
-18. block
-19. location
 
 ### INSTALLATION
 
@@ -69,6 +66,13 @@ pip install getmeta
 
 ```
 python setup.py install --user
+```
+
+### EXECUTABLE
+
+```
+pip install pyinstaller
+pyinstaller getmeta.py --onefile
 ```
 
 ### META INFORMATION

@@ -4,7 +4,6 @@ import hashlib
 import platform
 import requests
 import shutil
-from getmeta import __version__
 from pathlib import Path, PurePath
 
 def hasher(fname):
@@ -182,7 +181,7 @@ def start(amiid):
 
 def main():
 
-    print('GETMETA v'+__version__)
+    print('GETMETA v2024.5.26')
 
     ### Instance Metadata Service Version 2 (IMDSv2) ###
 
@@ -214,3 +213,6 @@ def main():
     f_in.close()
 
     print('    Done!!')
+
+if __name__=="__main__": 
+    main()
