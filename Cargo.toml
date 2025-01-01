@@ -1,0 +1,9 @@
+[package]
+name = "meta"
+version = "2025.1.1"
+edition = "2021"
+
+[dependencies]
+gethostname = "0.5.0"
+walkdir = "2.5.0"
+ureq = "2.12.1"
