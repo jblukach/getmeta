@@ -2,6 +2,8 @@
 # will have compiled files and executables
 debug/
 target/
+
+# getmeta output files
 mmi-*.parquet
 mmi-*.csv
 

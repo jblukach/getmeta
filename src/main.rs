@@ -27,7 +27,8 @@ fn output(amiid: String) {
     if args.len() == 3 {
         let bucket = &args[1];
         let region = &args[2];
-        println!("Output: s3://{}/mmi-{}.parquet", &bucket, &amiid);
+        let local = std::env::current_dir().unwrap();
+        println!("Output: {}/mmi-{}.parquet", local.display(), &amiid);
         println!("Region: {}", &region);
         collection(amiid, bucket.to_string(), region.to_string());
     } else {
@@ -72,23 +73,13 @@ fn collection(amiid: String, location: String, region: String) {
             let file = std::fs::File::create(out).unwrap();
             let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(path.into())).unwrap().finish().unwrap();
             ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
-            let upload = location.split('/');
-            let upload = upload.collect::<Vec<&str>>();
-            let credentials = Credentials::default().unwrap();
-            let bucket = Bucket::new(upload[0], region.parse().unwrap(), credentials).unwrap();
-            let output = format!("{}\\mmi-{}.parquet", local.display(), &amiid);
-            let s3file = format!("{}/mmi-{}.parquet", upload[1], &amiid);
-            let mut file = std::fs::File::open(output).unwrap();
-            let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer).unwrap();
-            bucket.put_object(s3file, &buffer);
         }
     } else {
         let local = std::env::current_dir().unwrap();
         let path = format!("{}/mmi-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
         writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
-        for entry in walkdir::WalkDir::new("/").into_iter().filter_map(|e| e.ok()) {
+        for entry in walkdir::WalkDir::new("/workspaces/getmeta").into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() { 
                 if entry.path().display().to_string().contains(",") {
                     println!(" - Skipped: {}", entry.path().display().to_string());
@@ -117,14 +108,17 @@ fn collection(amiid: String, location: String, region: String) {
             ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
             let upload = location.split('/');
             let upload = upload.collect::<Vec<&str>>();
-            let credentials = Credentials::default().unwrap();
-            let bucket = Bucket::new(upload[0], region.parse().unwrap(), credentials).unwrap();
+            //let credentials = Credentials::default().unwrap();
+            //let bucket = Bucket::new(upload[0], region.parse().unwrap(), credentials).unwrap();
             let output = format!("{}/mmi-{}.parquet", local.display(), &amiid);
-            let s3file = format!("{}/mmi-{}.parquet", upload[1], &amiid);
             let mut file = std::fs::File::open(output).unwrap();
             let mut buffer = Vec::new();
             file.read_to_end(&mut buffer).unwrap();
-            bucket.put_object(s3file, &buffer);
+            let uuid = uuid::Uuid::new_v4();
+            let s3file = format!("{}/mmi-{}-{}.parquet", upload[1], &amiid, uuid);
+
+
+            //bucket.put_object(s3file, &buffer);
         }
     }
 }
