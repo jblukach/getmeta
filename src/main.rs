@@ -62,7 +62,7 @@ fn collection(amiid: String) {
         let path = format!("{}/mmi-csv-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
         writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
-        for entry in walkdir::WalkDir::new("/workspaces/getmeta").into_iter().filter_map(|e| e.ok()) {
+        for entry in walkdir::WalkDir::new("/").into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() { 
                 if entry.path().display().to_string().contains(",") {
                     println!(" - Skipped: {}", entry.path().display().to_string());
