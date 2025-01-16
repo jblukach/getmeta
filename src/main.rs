@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use std::io::{Read, Write};
+use std::io::Write;
 
 fn main() {
     match ureq::put("http://169.254.169.254/latest/api/token").set("X-aws-ec2-metadata-token-ttl-seconds", "30").call() {
@@ -20,7 +20,8 @@ fn main() {
     }
 }
 
-fn output(amiid: String) {
+#[tokio::main]
+async fn output(amiid: String) {
     let args: Vec<String> = std::env::args().collect();
     if args.len() == 3 {
         let bucket = &args[1];
@@ -28,17 +29,17 @@ fn output(amiid: String) {
         let local = std::env::current_dir().unwrap();
         println!("Output: {}/mmi-{}.parquet", local.display(), &amiid);
         println!("Region: {}", &region);
-        collection(amiid, bucket.to_string(), region.to_string());
+        collection(amiid, bucket.to_string(), region.to_string()).await;
     } else {
         let local = std::env::current_dir().unwrap();
         println!("Output: {}/mmi-{}.csv", local.display(), &amiid);
         let buckt = "LOCAL".to_string();
         let region = "LOCAL".to_string();
-        collection(amiid, buckt, region);
+        collection(amiid, buckt, region).await;
     }
 }
 
-fn collection(amiid: String, location: String, region: String) {
+async fn collection(amiid: String, location: String, region: String) {
     if cfg!(target_os = "windows") {
         let local = std::env::current_dir().unwrap();
         let path = format!("{}\\mmi-{}.csv", local.display(), &amiid);
@@ -77,7 +78,7 @@ fn collection(amiid: String, location: String, region: String) {
         let path = format!("{}/mmi-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
         writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
-        for entry in walkdir::WalkDir::new("/workspaces/getmeta").into_iter().filter_map(|e| e.ok()) {
+        for entry in walkdir::WalkDir::new("/root").into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() { 
                 if entry.path().display().to_string().contains(",") {
                     println!(" - Skipped: {}", entry.path().display().to_string());
@@ -107,19 +108,18 @@ fn collection(amiid: String, location: String, region: String) {
             let upload = location.split('/');
             let upload = upload.collect::<Vec<&str>>();
 
-
-            let output = format!("{}/mmi-{}.parquet", local.display(), &amiid);
-            let mut file = std::fs::File::open(output).unwrap();
-            let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer).unwrap();
-
-
             let uuid = uuid::Uuid::new_v4();
             let s3file = format!("{}/mmi-{}-uuid-{}.parquet", upload[1], &amiid, uuid);
-
-
-
             println!("Bucket: s3://{}/{}", upload[0], s3file);
+
+            let output = format!("{}/mmi-{}.parquet", local.display(), &amiid);
+            let body = aws_sdk_s3::primitives::ByteStream::from_path(std::path::Path::new(&output)).await.unwrap();
+            let region = aws_sdk_s3::config::Region::new(region);
+            let config = aws_config::from_env().region(region).load().await;
+            let client = aws_sdk_s3::Client::new(&config);
+            let response = client.put_object().bucket(upload[0]).key(&s3file).body(body).send().await.unwrap();
+            println!("Response: {:?}", response);
+
         }
     }
 }
