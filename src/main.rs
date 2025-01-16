@@ -1,5 +1,5 @@
 use polars::prelude::*;
-use std::io::Write;
+use std::io::{Read, Write};
 
 fn main() {
     match ureq::put("http://169.254.169.254/latest/api/token").set("X-aws-ec2-metadata-token-ttl-seconds", "30").call() {
@@ -21,14 +21,27 @@ fn main() {
 }
 
 fn output(amiid: String) {
-    collection(amiid);
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() == 3 {
+        let bucket = &args[1];
+        let region = &args[2];
+        let local = std::env::current_dir().unwrap();
+        println!("Output: {}/mmi-{}.parquet", local.display(), &amiid);
+        println!("Region: {}", &region);
+        collection(amiid, bucket.to_string(), region.to_string());
+    } else {
+        let local = std::env::current_dir().unwrap();
+        println!("Output: {}/mmi-{}.csv", local.display(), &amiid);
+        let buckt = "LOCAL".to_string();
+        let region = "LOCAL".to_string();
+        collection(amiid, buckt, region);
+    }
 }
 
-fn collection(amiid: String) {
+fn collection(amiid: String, location: String, region: String) {
     if cfg!(target_os = "windows") {
         let local = std::env::current_dir().unwrap();
-        println!("Output: {}\\mmi-csv-{}.csv", local.display(), &amiid);
-        let path = format!("{}\\mmi-csv-{}.csv", local.display(), &amiid);
+        let path = format!("{}\\mmi-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
         writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
         for entry in walkdir::WalkDir::new("c:\\").into_iter().filter_map(|e| e.ok()) {
@@ -51,18 +64,20 @@ fn collection(amiid: String) {
             }
         }
         file.sync_all().unwrap();
-        let out = format!("{}\\mmi-pqt-{}.parquet", local.display(), &amiid);
-        let file = std::fs::File::create(out).unwrap();
-        let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(path.into())).unwrap().finish().unwrap();
-        ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
-        println!("Done: {}\\mmi-pqt-{}.parquet", local.display(), &amiid);
+        if &location == "LOCAL" {
+            println!("Completed!");
+        } else {
+            let out = format!("{}\\mmi-{}.parquet", local.display(), &amiid);
+            let file = std::fs::File::create(out).unwrap();
+            let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(path.into())).unwrap().finish().unwrap();
+            ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
+        }
     } else {
         let local = std::env::current_dir().unwrap();
-        println!("Output: {}/mmi-csv-{}.csv", local.display(), &amiid);
-        let path = format!("{}/mmi-csv-{}.csv", local.display(), &amiid);
+        let path = format!("{}/mmi-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
         writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
-        for entry in walkdir::WalkDir::new("/").into_iter().filter_map(|e| e.ok()) {
+        for entry in walkdir::WalkDir::new("/workspaces/getmeta").into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() { 
                 if entry.path().display().to_string().contains(",") {
                     println!(" - Skipped: {}", entry.path().display().to_string());
@@ -82,11 +97,30 @@ fn collection(amiid: String) {
             }
         }
         file.sync_all().unwrap();
-        let out = format!("{}/mmi-pqt-{}.parquet", local.display(), &amiid);
-        let file = std::fs::File::create(out).unwrap();
-        let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(path.into())).unwrap().finish().unwrap();
-        ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
-        println!("Done: {}/mmi-pqt-{}.parquet", local.display(), &amiid);
+        if &location == "LOCAL" {
+            println!("Completed!");
+        } else {
+            let out = format!("{}/mmi-{}.parquet", local.display(), &amiid);
+            let file = std::fs::File::create(out).unwrap();
+            let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(path.into())).unwrap().finish().unwrap();
+            ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
+            let upload = location.split('/');
+            let upload = upload.collect::<Vec<&str>>();
+
+
+            let output = format!("{}/mmi-{}.parquet", local.display(), &amiid);
+            let mut file = std::fs::File::open(output).unwrap();
+            let mut buffer = Vec::new();
+            file.read_to_end(&mut buffer).unwrap();
+
+
+            let uuid = uuid::Uuid::new_v4();
+            let s3file = format!("{}/mmi-{}-uuid-{}.parquet", upload[1], &amiid, uuid);
+
+
+
+            println!("Bucket: s3://{}/{}", upload[0], s3file);
+        }
     }
 }
 
