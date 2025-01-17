@@ -53,13 +53,27 @@ async fn collection(amiid: String, location: String, region: String) {
                     let fname = entry.file_name().to_str().unwrap();
                     let metadata = std::fs::metadata(entry.path()).unwrap();
                     let fsize = metadata.len().to_string();
-                    let b3hash;
-                    let test = std::fs::File::open(entry.path());
-                    if test.is_err() {
-                        println!(" - Denied: {}", entry.path().display().to_string());
-                        b3hash = "DENIED".to_string();
+                    let mut b3hash;
+                    if fsize == "0" {
+                        println!(" - Zero: {}", entry.path().display().to_string());
+                        b3hash = "ZERO".to_string();
+                    } else if fsize.parse::<u64>().unwrap() > 104857599 {
+                        println!(" - Large: {}", entry.path().display().to_string());
+                        b3hash = "LARGE".to_string();
                     } else {
-                        b3hash = b3content(entry.path());
+                        let test = std::fs::File::open(entry.path());
+                        if test.is_err() {
+                            println!(" - Denied: {}", entry.path().display().to_string());
+                            b3hash = "DENIED".to_string();
+                        } else {
+                            b3hash = b3content(entry.path());
+                            if b3hash == "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262" {
+                                println!(" - Empty: {}", entry.path().display().to_string());
+                                b3hash = "EMPTY".to_string();
+                            } else {
+                                b3hash = b3hash;
+                            }
+                        }
                     }
                     let b3name = b3text(fname.to_string());
                     let fpath = entry.path().display().to_string();
@@ -105,13 +119,27 @@ async fn collection(amiid: String, location: String, region: String) {
                     let fname = entry.file_name().to_str().unwrap();
                     let metadata = std::fs::metadata(entry.path()).unwrap();
                     let fsize = metadata.len().to_string();
-                    let b3hash;
-                    let test = std::fs::File::open(entry.path());
-                    if test.is_err() {
-                        println!(" - Denied: {}", entry.path().display().to_string());
-                        b3hash = "DENIED".to_string();
+                    let mut b3hash;
+                    if fsize == "0" {
+                        println!(" - Zero: {}", entry.path().display().to_string());
+                        b3hash = "ZERO".to_string();
+                    } else if fsize.parse::<u64>().unwrap() > 104857599 {
+                        println!(" - Large: {}", entry.path().display().to_string());
+                        b3hash = "LARGE".to_string();
                     } else {
-                        b3hash = b3content(entry.path());
+                        let test = std::fs::File::open(entry.path());
+                        if test.is_err() {
+                            println!(" - Denied: {}", entry.path().display().to_string());
+                            b3hash = "DENIED".to_string();
+                        } else {
+                            b3hash = b3content(entry.path());
+                            if b3hash == "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262" {
+                                println!(" - Empty: {}", entry.path().display().to_string());
+                                b3hash = "EMPTY".to_string();
+                            } else {
+                                b3hash = b3hash;
+                            }
+                        }
                     }
                     let b3name = b3text(fname.to_string());
                     let fpath = entry.path().display().to_string();

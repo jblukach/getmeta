@@ -25,6 +25,14 @@ cargo run
 - b3path
 - b3dir
 
+### Tests
+
+- **DENIED** Permission Issue
+- **EMPTY** Empty File Hash
+- **LARGE** File Greater Than 100 MB
+- **SKIPPED** File Path Contains Comma
+- **ZERO** Zero File Size
+
 ### Requirements
 
 ```
