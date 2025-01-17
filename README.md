@@ -14,4 +14,21 @@ cargo build
 cargo run
 ```
 
+### Artifacts
+
+- amiid
+- fpath
+- fname
+- fsize
+- b3hash
+- b3name
+- b3path
+- b3dir
+
+### Requirements
+
+```
+yum install gcc openssl-devel
+```
+
 ![Meta Information](images/matchmeta.png)
