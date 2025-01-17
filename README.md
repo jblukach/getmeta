@@ -31,4 +31,10 @@ cargo run
 yum install gcc openssl-devel
 ```
 
+### Binary Build
+
+```
+cargo build --release
+```
+
 ![Meta Information](images/matchmeta.png)
