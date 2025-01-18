@@ -39,13 +39,23 @@ cargo run
 
 ### Requirements
 
+Amazon Linux
+
 ```
 yum install gcc git openssl-devel -y
+```
+
+Ubuntu Linux
+
+```
+apt-get update
+apt-get install gcc -y
 ```
 
 ### Binary Build
 
 ```
+git clone https://github.com/jblukach/getmeta.git
 cargo build --release
 ```
 
