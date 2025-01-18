@@ -25,18 +25,21 @@ cargo run
 - b3path
 - b3dir
 
-### Tests
+### Test
+
+- File paths containing the pipe **|** character are skipped!
+
+### Classifications
 
 - **DENIED** Permission Issue
 - **EMPTY** Empty File Hash
-- **LARGE** File Greater Than 100 MB
-- **SKIPPED** File Path Contains Comma
+- **LARGE** File Size 100+ MB
 - **ZERO** Zero File Size
 
 ### Requirements
 
 ```
-yum install gcc openssl-devel
+yum install gcc git openssl-devel -y
 ```
 
 ### Binary Build

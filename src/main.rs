@@ -44,10 +44,10 @@ async fn collection(amiid: String, location: String, region: String) {
         let local = std::env::current_dir().unwrap();
         let path = format!("{}\\mmi-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
-        writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
+        writeln!(file, "amiid|fpath|fname|fsize|b3hash|b3name|b3path|b3dir").unwrap();
         for entry in walkdir::WalkDir::new("c:\\").into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() { 
-                if entry.path().display().to_string().contains(",") {
+                if entry.path().display().to_string().contains("|") {
                     println!(" - Skipped: {}", entry.path().display().to_string());
                 } else {               
                     let fname = entry.file_name().to_str().unwrap();
@@ -55,7 +55,6 @@ async fn collection(amiid: String, location: String, region: String) {
                     let fsize = metadata.len().to_string();
                     let mut b3hash;
                     if fsize == "0" {
-                        println!(" - Zero: {}", entry.path().display().to_string());
                         b3hash = "ZERO".to_string();
                     } else if fsize.parse::<u64>().unwrap() > 104857599 {
                         println!(" - Large: {}", entry.path().display().to_string());
@@ -68,7 +67,6 @@ async fn collection(amiid: String, location: String, region: String) {
                         } else {
                             b3hash = b3content(entry.path());
                             if b3hash == "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262" {
-                                println!(" - Empty: {}", entry.path().display().to_string());
                                 b3hash = "EMPTY".to_string();
                             } else {
                                 b3hash = b3hash;
@@ -81,7 +79,7 @@ async fn collection(amiid: String, location: String, region: String) {
                     let fdir = entry.path().parent().unwrap();
                     let b3dir = b3windows(fdir.display().to_string());
                     let fpath = entry.path().display().to_string();
-                    writeln!(file, "{},{},{},{},{},{},{},{}", &amiid, &fpath, &fname, &fsize, &b3hash, &b3name, &b3path, &b3dir).unwrap();
+                    writeln!(file, "{}|{}|{}|{}|{}|{}|{}|{}", &amiid, &fpath, &fname, &fsize, &b3hash, &b3name, &b3path, &b3dir).unwrap();
                 }
             }
         }
@@ -110,10 +108,11 @@ async fn collection(amiid: String, location: String, region: String) {
         let local = std::env::current_dir().unwrap();
         let path = format!("{}/mmi-{}.csv", local.display(), &amiid);
         let mut file = std::fs::File::create(&path).unwrap();
-        writeln!(file, "amiid,fpath,fname,fsize,b3hash,b3name,b3path,b3dir").unwrap();
-        for entry in walkdir::WalkDir::new("/").into_iter().filter_map(|e| e.ok()) {
+        writeln!(file, "getmeta").unwrap();
+        //writeln!(file, "amiid|fpath|fname|fsize|b3hash|b3name|b3path|b3dir").unwrap();
+        for entry in walkdir::WalkDir::new("/workspaces/getmeta").into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() { 
-                if entry.path().display().to_string().contains(",") {
+                if entry.path().display().to_string().contains("|") {
                     println!(" - Skipped: {}", entry.path().display().to_string());
                 } else {               
                     let fname = entry.file_name().to_str().unwrap();
@@ -121,7 +120,6 @@ async fn collection(amiid: String, location: String, region: String) {
                     let fsize = metadata.len().to_string();
                     let mut b3hash;
                     if fsize == "0" {
-                        println!(" - Zero: {}", entry.path().display().to_string());
                         b3hash = "ZERO".to_string();
                     } else if fsize.parse::<u64>().unwrap() > 104857599 {
                         println!(" - Large: {}", entry.path().display().to_string());
@@ -134,7 +132,6 @@ async fn collection(amiid: String, location: String, region: String) {
                         } else {
                             b3hash = b3content(entry.path());
                             if b3hash == "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262" {
-                                println!(" - Empty: {}", entry.path().display().to_string());
                                 b3hash = "EMPTY".to_string();
                             } else {
                                 b3hash = b3hash;
@@ -147,7 +144,7 @@ async fn collection(amiid: String, location: String, region: String) {
                     let fdir = entry.path().parent().unwrap();
                     let b3dir = b3unix(fdir.display().to_string());
                     let fpath = entry.path().display().to_string();
-                    writeln!(file, "{},{},{},{},{},{},{},{}", &amiid, &fpath, &fname, &fsize, &b3hash, &b3name, &b3path, &b3dir).unwrap();
+                    writeln!(file, "{}|{}|{}|{}|{}|{}|{}|{}", &amiid, &fpath, &fname, &fsize, &b3hash, &b3name, &b3path, &b3dir).unwrap();
                 }
             }
         }
@@ -158,19 +155,29 @@ async fn collection(amiid: String, location: String, region: String) {
             let out = format!("{}/mmi-{}.parquet", local.display(), &amiid);
             let file = std::fs::File::create(out).unwrap();
             let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(path.into())).unwrap().finish().unwrap();
+
+            //print df
+            println!("{:?}", df);
+
+            
+
+            
+
+
+
             ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
             let upload = location.split('/');
             let upload = upload.collect::<Vec<&str>>();
             let uuid = uuid::Uuid::new_v4();
             let s3file = format!("{}/mmi-{}-uuid-{}.parquet", upload[1], &amiid, uuid);
             println!("Bucket: s3://{}/{}", upload[0], s3file);
-            let output = format!("{}/mmi-{}.parquet", local.display(), &amiid);
-            let body = aws_sdk_s3::primitives::ByteStream::from_path(std::path::Path::new(&output)).await.unwrap();
-            let region = aws_sdk_s3::config::Region::new(region);
-            let config = aws_config::from_env().region(region).load().await;
-            let client = aws_sdk_s3::Client::new(&config);
-            let response = client.put_object().bucket(upload[0]).key(&s3file).body(body).send().await.unwrap();
-            println!("Response: {:?}", response);
+            //let output = format!("{}/mmi-{}.parquet", local.display(), &amiid);
+            //let body = aws_sdk_s3::primitives::ByteStream::from_path(std::path::Path::new(&output)).await.unwrap();
+            //let region = aws_sdk_s3::config::Region::new(region);
+            //let config = aws_config::from_env().region(region).load().await;
+            //let client = aws_sdk_s3::Client::new(&config);
+            //let response = client.put_object().bucket(upload[0]).key(&s3file).body(body).send().await.unwrap();
+            //println!("Response: {:?}", response);
         }
     }
 }
