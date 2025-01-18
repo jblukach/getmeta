@@ -181,7 +181,7 @@ fn b3content(path: &std::path::Path) -> String {
     match std::fs::File::open(path) {
         Ok(mut file) => {
             let mut hasher = blake3::Hasher::new();
-            std::io::copy(&mut file, &mut hasher).unwrap();
+            let _temp = std::io::copy(&mut file, &mut hasher);
             let hash = hasher.finalize();
             hash.to_string()
         },
