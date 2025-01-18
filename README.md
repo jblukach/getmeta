@@ -25,15 +25,16 @@ cargo run
 - b3path
 - b3dir
 
-### Test
+### Exclusion
 
-- File paths containing the pipe **|** character are skipped!
+- File paths containing **,** a.k.a. comma are excluded!
 
 ### Classifications
 
 - **DENIED** Permission Issue
 - **EMPTY** Empty File Hash
-- **LARGE** File Size 100+ MB
+- **ERROR** Content Hash Error
+- **LARGE** File Size 1+ GB
 - **ZERO** Zero File Size
 
 ### Requirements
