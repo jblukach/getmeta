@@ -199,16 +199,21 @@ fn b3text(text: String) -> String {
 fn b3unix(path: String) -> String {
     let out = path.split('/');
     let mut out = out.collect::<Vec<&str>>();
-    if out[1] == "home" {
-        out[2] = "user";
-        let path = out.join("/");
-        let hash = b3text(path);
-        return hash.to_string();
-    } else if out[1] == "Users" && out[2] != "Shared"  {
-        out[2] = "user";
-        let path = out.join("/");
-        let hash = b3text(path);
-        return hash.to_string();
+    if out.len() > 3 {
+        if out[1] == "home" {
+            out[2] = "user";
+            let path = out.join("/");
+            let hash = b3text(path);
+            return hash.to_string();
+        } else if out[1] == "Users" && out[2] != "Shared" {
+            out[2] = "user";
+            let path = out.join("/");
+            let hash = b3text(path);
+            return hash.to_string();
+        } else {
+            let hash = b3text(path);
+            return hash.to_string();
+        }
     } else {
         let hash = b3text(path);
         return hash.to_string();
