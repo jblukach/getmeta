@@ -25,9 +25,15 @@ cargo run
 - b3path
 - b3dir
 
+### Normalization
+
+- Linux operating systems normalize the accounts in the ```home``` directory to the word **user** for the account.
+- Macintosh operating systems normalize accounts in the ```Users``` directory to the word **user** except for the ```Shared``` account.
+- Windows operating systems normalize accounts in the ```Users``` directory to the word **user** except for the ```Default``` and ```Public``` accounts.
+
 ### Exclusion
 
-- File paths containing **,** a.k.a. comma are excluded!
+- File paths containing ```,``` a.k.a. **comma** are excluded!
 
 ### Classifications
 
