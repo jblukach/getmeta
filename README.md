@@ -66,7 +66,7 @@ Ubuntu Linux
 
 ```
 apt-get update
-apt-get install gcc libssl-dev -y
+apt-get install gcc libssl-dev pkg-config -y
 ```
 
 ### Binary Build
