@@ -20,8 +20,6 @@ cargo run
 - fpath
 - fname
 - fsize
-- ctime
-- mtime
 - b3hash
 - b3name
 - b3path
@@ -36,14 +34,8 @@ cargo run
 
 ### Local Usage
 
-Collect removes the ```ctime``` and ```mtime``` columns when written to the Apache Parquet file.
-
 ```
-getmeta collect
-```
-
-```
-getmeta triage
+getmeta
 ```
 
 ### Cloud Usage
@@ -51,11 +43,7 @@ getmeta triage
 Once written, the Apache parquet file gets shipped to an AWS S3 Bucket for host offloading.
 
 ```
-getmeta collect <bucket> <region> <prefix>
-```
-
-```
-getmeta triage <bucket> <region> <prefix>
+getmeta <bucket> <region> <prefix>
 ```
 
 ### Classifications
@@ -78,7 +66,7 @@ Ubuntu Linux
 
 ```
 apt-get update
-apt-get install gcc -y
+apt-get install gcc libssl-dev -y
 ```
 
 ### Binary Build
