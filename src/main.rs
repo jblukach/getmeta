@@ -23,13 +23,13 @@ async fn main() {
     println!("Parquet File: {}", &path);
     if args.len() == 4 {
         let uuid = uuid::Uuid::new_v4();
-        let s3file = format!("{}/mmi-{}-uuid-{}.parquet", args[4], &amiid, uuid);
-        println!("Bucket: s3://{}/{}", args[2], s3file);
+        let s3file = format!("{}/mmi-{}-uuid-{}.parquet", args[3], &amiid, uuid);
+        println!("Bucket: s3://{}/{}", args[1], s3file);
         let body = aws_sdk_s3::primitives::ByteStream::from_path(std::path::Path::new(&path)).await.unwrap();
-        let region = aws_sdk_s3::config::Region::new(args[3].clone());
+        let region = aws_sdk_s3::config::Region::new(args[2].clone());
         let config = aws_config::from_env().region(region).load().await;
         let client = aws_sdk_s3::Client::new(&config);
-        let response = client.put_object().bucket(&args[2]).key(&s3file).body(body).send().await.unwrap();
+        let response = client.put_object().bucket(&args[1]).key(&s3file).body(body).send().await.unwrap();
         println!("Response: {:?}", response);
     } else {
         println!("getmeta <bucket> <region> <prefix>");
