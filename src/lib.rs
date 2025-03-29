@@ -14,7 +14,7 @@ pub fn collectmsft(amiid: String) -> String {
             if test.is_err() {
                 println!(" - Denied: {}", entry.path().display().to_string());
                 b3hash = "DENIED".to_string();
-                fsize = "DENIED".to_string();
+                fsize = "0".to_string();
             } else {
                 let metadata = std::fs::metadata(entry.path()).unwrap();
                 fsize = metadata.len().to_string();
@@ -64,7 +64,7 @@ pub fn collectunix(amiid: String) -> String {
             if test.is_err() {
                 println!(" - Denied: {}", entry.path().display().to_string());
                 b3hash = "DENIED".to_string();
-                fsize = "DENIED".to_string();
+                fsize = "0".to_string();
             } else {
                 let metadata = std::fs::metadata(entry.path()).unwrap();
                 fsize = metadata.len().to_string();
