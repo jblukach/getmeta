@@ -20,6 +20,8 @@ cargo run
 - fpath
 - fname
 - fsize
+- ctime
+- mtime
 - b3hash
 - b3name
 - b3path
@@ -30,10 +32,31 @@ cargo run
 - Linux operating systems normalize the accounts in the ```home``` directory to the word **user** for the account.
 - Macintosh operating systems normalize accounts in the ```Users``` directory to the word **user** except for the ```Shared``` account.
 - Windows operating systems normalize accounts in the ```Users``` directory to the word **user** except for the ```Default``` and ```Public``` accounts.
+- File names and paths containing a ```,``` character a.k.a. **comma**, are converted to ```|||``` a.k.a. **three pipes** for storage.
 
-### Exclusion
+### Local Usage
 
-- File paths containing ```,``` a.k.a. **comma** are excluded!
+Collect removes the ```ctime``` and ```mtime``` columns when written to the Apache Parquet file.
+
+```
+getmeta collect
+```
+
+```
+getmeta triage
+```
+
+### Cloud Usage
+
+Once written, the Apache parquet file gets shipped to an AWS S3 Bucket for host offloading.
+
+```
+getmeta collect <bucket> <region> <prefix>
+```
+
+```
+getmeta triage <bucket> <region> <prefix>
+```
 
 ### Classifications
 
