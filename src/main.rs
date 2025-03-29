@@ -21,7 +21,7 @@ async fn main() {
             println!("CSV File: {}", &csvfile);
             let file = std::fs::File::create(&path).unwrap();
             if args[1] == "collect" {
-                let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(PathBuf::from(&csvfile))).unwrap().finish().unwrap();
+                let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(PathBuf::from(&csvfile))).unwrap().finish();
                 if df.schema().get("ctime").is_some() {
                     df.drop_in_place("ctime").unwrap();
                 }
@@ -31,7 +31,7 @@ async fn main() {
                 ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
                 println!("Parquet File: {}", &path);
             }   else {
-                let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(PathBuf::from(&csvfile))).unwrap().finish().unwrap();
+                let mut df = CsvReadOptions::default().with_has_header(true).try_into_reader_with_file_path(Some(PathBuf::from(&csvfile))).unwrap().finish();
                 ParquetWriter::new(file).with_compression(ParquetCompression::Snappy).finish(&mut df).unwrap();
                 println!("Parquet File: {}", &path);
             }
