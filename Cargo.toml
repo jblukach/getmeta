@@ -1,7 +1,12 @@
 [package]
 name = "getmeta"
+description = "Not just gold builds anymore!"
+license = "Apache-2.0"
 version = "2025.3.29"
 edition = "2024"
+homepage = "https://4n6ir.com"
+repository = "https://github.com/jblukach/getmeta"
+readme = "README.md"
 
 [dependencies]
 aws-config = { version = "1.6.1", features = ["behavior-version-latest"] }
