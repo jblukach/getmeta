@@ -62,6 +62,13 @@ Amazon Linux
 yum install gcc git openssl-devel -y
 ```
 
+SUSE Linux
+
+```
+zypper patch
+zypper install gcc openssl-devel pkg-config
+```
+
 Ubuntu Linux
 
 ```
