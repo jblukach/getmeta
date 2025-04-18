@@ -66,7 +66,7 @@ SUSE Linux
 
 ```
 zypper patch
-zypper install gcc openssl-devel pkg-config
+zypper install gcc git openssl-devel pkg-config
 ```
 
 Ubuntu Linux
