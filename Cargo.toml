@@ -2,23 +2,23 @@
 name = "getmeta"
 description = "Not just gold builds anymore!"
 license = "Apache-2.0"
-version = "2025.3.29"
+version = "2026.2.10"
 edition = "2024"
-homepage = "https://4n6ir.com"
+homepage = "https://lukach.io"
 repository = "https://github.com/jblukach/getmeta"
 readme = "README.md"
 
 [dependencies]
-aws-config = { version = "1.6.1", features = ["behavior-version-latest"] }
-aws-sdk-s3 = "1.80.0"
-blake3 = "1.7.0"
-gethostname = "1.0.1"
-mmi = "2025.3.23"
-polars = { version = "0.46.0", features = ["parquet"] }
-tokio = { version = "1.44.1", features = ["full"] }
+aws-config = { version = "1.8.13", features = ["behavior-version-latest"] }
+aws-sdk-s3 = "1.122.0"
+blake3 = "1.8.3"
+gethostname = "1.1.0"
+mmi = "2026.2.10"
+polars = { version = "0.53.0", features = ["parquet"] }
+tokio = { version = "1.49.0", features = ["full"] }
 walkdir = "2.5.0"
-ureq = "3.0.10"
-uuid = { version = "1.16.0", features = ["v4","fast-rng","macro-diagnostics"] }
+ureq = "3.2.0"
+uuid = { version = "1.20.0", features = ["v4","fast-rng","macro-diagnostics"] }
 
 [profile.release]
 strip = true

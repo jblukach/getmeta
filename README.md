@@ -62,13 +62,6 @@ Amazon Linux
 yum install gcc git openssl-devel -y
 ```
 
-SUSE Linux
-
-```
-zypper patch
-zypper install gcc git openssl-devel pkg-config
-```
-
 Ubuntu Linux
 
 ```
@@ -83,4 +76,4 @@ git clone https://github.com/jblukach/getmeta.git
 cargo build --release
 ```
 
-![Meta Information](images/matchmeta.png)
+![Match Meta Information (MMI)](mmi.png)

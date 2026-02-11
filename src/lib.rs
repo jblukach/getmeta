@@ -30,8 +30,6 @@ pub fn collectmsft(amiid: String) -> String {
                     } else if b3hash == "ERROR" {
                         println!(" - Error: {}", entry.path().display().to_string());
                         b3hash = "ERROR".to_string();
-                    } else {
-                        b3hash = b3hash;
                     }
                 }
             }
@@ -80,8 +78,6 @@ pub fn collectunix(amiid: String) -> String {
                     } else if b3hash == "ERROR" {
                         println!(" - Error: {}", entry.path().display().to_string());
                         b3hash = "ERROR".to_string();
-                    } else {
-                        b3hash = b3hash;
                     }
                 }
             }
